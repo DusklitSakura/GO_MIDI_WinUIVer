@@ -1,0 +1,88 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>GoMidi</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon Condition="Exists('Assets\AppIcon.ico')">Assets\AppIcon.ico</ApplicationIcon>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Win32 interop uses [LibraryImport], whose generated stubs need unsafe. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!--
+      Portable distribution: the app ships as a plain folder inside a ZIP, so it
+      runs unpackaged — no MSIX identity and no machine-wide Windows App SDK
+      install. Self-contained pulls both the .NET runtime and the Windows App
+      SDK payload next to the executable, so the ZIP works on a clean machine.
+    -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <EnableWinAppRunSupport>false</EnableWinAppRunSupport>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">true</PublishReadyToRun>
+    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">false</PublishReadyToRun>
+
+    <!-- WinUI's XAML compiler cannot consume a trimmed/CsWinRT-trimmed assembly graph. -->
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!--
+    Because the WinUI component is referenced directly rather than through the
+    Microsoft.WindowsAppSDK metapackage, the packaging targets that carry the
+    app's own compiled XAML into the publish folder do not run. Without them the
+    published app dies in InitializeComponent with a XamlParseException, so the
+    .xbf pages and the app resource index are copied explicitly.
+  -->
+  <Target Name="CopyAppXamlResourcesToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!--
+        The publish folder lives under the build output folder, so it has to be
+        excluded explicitly: without the Exclude the glob matches the copies
+        already made by an earlier publish and nests them one level deeper each
+        time the project is published.
+      -->
+      <_AppXamlResource Include="$(TargetDir)**\*.xbf" Exclude="$(PublishDir)**\*.xbf" />
+      <_AppXamlResource Include="$(TargetDir)$(AssemblyName).pri" Condition="Exists('$(TargetDir)$(AssemblyName).pri')" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(_AppXamlResource)"
+      DestinationFiles="@(_AppXamlResource->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <ItemGroup>
+    <!-- Pinned rather than floating, so a clone builds reproducibly. -->
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+
+    <!--
+      Referencing the WinUI component directly rather than the
+      Microsoft.WindowsAppSDK metapackage keeps the unused AI / ML / Search /
+      Widgets payload (onnxruntime, DirectML, AiFabric, ...) out of the portable
+      build — roughly 40 MB of runtime this app never touches.
+    -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />
+
+    <!--
+      Pinned explicitly because WinUI 2.3.9 asks for 2.1.8, which is no longer
+      published; NuGet silently resolves 2.1.9 and warns NU1603 on every build.
+    -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="2.1.9" />
+  </ItemGroup>
+</Project>

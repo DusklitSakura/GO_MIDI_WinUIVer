@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="GoMidi.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="GO_MIDI!"
+    mc:Ignorable="d">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="BaseAlt" />
+    </Window.SystemBackdrop>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TitleBar
+            x:Name="AppTitleBar"
+            Title="GO_MIDI!"
+            Subtitle="正在加载…">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="Assets/AppIcon.ico" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <!--  Collapses to zero height while closed, so nothing shifts.  -->
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <NavigationView
+                x:Name="Nav"
+                Grid.Row="1"
+                IsBackButtonVisible="Collapsed"
+                IsSettingsVisible="True"
+                OpenPaneLength="216"
+                PaneDisplayMode="Left"
+                SelectionChanged="OnNavSelectionChanged">
+
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Content="演奏" Tag="player">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE768;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Content="通道" Tag="channels">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE9E9;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Content="键位" Tag="keymap">
+                        <NavigationViewItem.Icon>
+                            <FontIcon Glyph="&#xE765;" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </NavigationView.MenuItems>
+
+                <Frame x:Name="ContentFrame" />
+            </NavigationView>
+
+            <InfoBar
+                x:Name="Notification"
+                Grid.Row="0"
+                Margin="64,10,16,0"
+                IsClosable="True"
+                IsOpen="False" />
+        </Grid>
+    </Grid>
+</Window>

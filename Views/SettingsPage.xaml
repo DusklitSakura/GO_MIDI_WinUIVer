@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="GoMidi.Views.SettingsPage"
+    NavigationCacheMode="Required"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:GoMidi.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <Style x:Key="RowLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="RowHint" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="RowDivider" TargetType="Border">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Background" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer Padding="24,16,24,24" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="14">
+            <StackPanel Spacing="3">
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="设置" />
+                <TextBlock
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="所有设置都会自动保存到本机的配置文件。" />
+            </StackPanel>
+
+            <!--  运行权限  -->
+            <Border Padding="16,6" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,10,0,4"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="运行权限" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="{x:Bind ViewModel.PrivilegeTitle, Mode=OneWay}" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="{x:Bind ViewModel.PrivilegeDetail, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="1"
+                            MinWidth="160"
+                            VerticalAlignment="Center"
+                            Command="{x:Bind ViewModel.TogglePrivilegeCommand}"
+                            Content="{x:Bind ViewModel.PrivilegeActionText, Mode=OneWay}"
+                            ToolTipService.ToolTip="程序会先保存当前设置，然后以新的权限重新启动" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!--  演奏  -->
+            <Border Padding="16,6" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,10,0,4"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="演奏" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="倍速" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="0.1× – 100×。变速只影响本次演奏，不会被保存。" />
+                        </StackPanel>
+                        <NumberBox
+                            Grid.Column="1"
+                            Width="150"
+                            VerticalAlignment="Center"
+                            LargeChange="0.5"
+                            Maximum="100"
+                            Minimum="0.1"
+                            SmallChange="0.1"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.Speed, Mode=TwoWay}" />
+                    </Grid>
+
+                    <Border Style="{StaticResource RowDivider}" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="和弦分解" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="把同时按下的和弦拆成快速连续的单音。游戏每次只识别一个按键时打开它。" />
+                        </StackPanel>
+                        <ToggleSwitch
+                            Grid.Column="1"
+                            MinWidth="0"
+                            VerticalAlignment="Center"
+                            IsOn="{x:Bind ViewModel.DecomposeChords, Mode=TwoWay}"
+                            OffContent="关"
+                            OnContent="开" />
+                    </Grid>
+
+                    <Border Style="{StaticResource RowDivider}" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="网络延迟补偿" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="提前发出按键，抵消游戏画面与声音的延迟。单位为毫秒，0 – 500。" />
+                        </StackPanel>
+                        <NumberBox
+                            Grid.Column="1"
+                            Width="150"
+                            VerticalAlignment="Center"
+                            LargeChange="10"
+                            Maximum="500"
+                            Minimum="0"
+                            SmallChange="5"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.LatencyCompensation, Mode=TwoWay}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!--  定时播放  -->
+            <Border Padding="16,6" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,10,0,4"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="定时播放" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="时间同步" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="{x:Bind ViewModel.NtpStatusText, Mode=OneWay}" />
+                        </StackPanel>
+                        <Button
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Command="{x:Bind ViewModel.SyncNtpCommand}"
+                            IsEnabled="{x:Bind local:SettingsPage.Not(ViewModel.IsSyncing), Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon FontSize="14" Glyph="&#xE895;" />
+                                <TextBlock Text="立即同步" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <Border Style="{StaticResource RowDivider}" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="自动开始时间" />
+                            <!--  A markup extension only parses when it is the whole
+                                  attribute, so the live clock goes in its own Run.  -->
+                            <TextBlock Style="{StaticResource RowHint}">
+                                <Run Text="到达该时刻会从头开始演奏当前曲目；如果时间已过则安排到明天。当前时间：" />
+                                <Run Text="{x:Bind ViewModel.ClockText, Mode=OneWay}" />
+                            </TextBlock>
+                        </StackPanel>
+                        <TimePicker
+                            Grid.Column="1"
+                            VerticalAlignment="Bottom"
+                            ClockIdentifier="24HourClock"
+                            Header="开始时间"
+                            Time="{x:Bind ViewModel.ScheduleTime, Mode=TwoWay}" />
+                        <NumberBox
+                            Grid.Column="2"
+                            Width="110"
+                            VerticalAlignment="Bottom"
+                            Header="秒"
+                            Maximum="59"
+                            Minimum="0"
+                            SpinButtonPlacementMode="Compact"
+                            Value="{x:Bind ViewModel.ScheduleSeconds, Mode=TwoWay}" />
+                        <Button
+                            Grid.Column="3"
+                            MinWidth="130"
+                            VerticalAlignment="Bottom"
+                            Command="{x:Bind ViewModel.ToggleScheduleCommand}"
+                            Style="{StaticResource AccentButtonStyle}">
+                            <TextBlock Text="{x:Bind local:SettingsPage.ScheduleLabel(ViewModel.IsScheduled), Mode=OneWay}" />
+                        </Button>
+                    </Grid>
+
+                    <InfoBar
+                        Margin="0,0,0,12"
+                        IsClosable="False"
+                        IsOpen="{x:Bind ViewModel.IsScheduled, Mode=OneWay}"
+                        Message="{x:Bind ViewModel.CountdownText, Mode=OneWay}"
+                        Severity="Informational"
+                        Title="定时播放已启用" />
+                </StackPanel>
+            </Border>
+
+            <!--  热键  -->
+            <Border Padding="16,6" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,10,0,4"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="热键" />
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="F12 全局播放 / 暂停" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="在其他窗口（包括游戏）中也能控制播放。如果 F12 已被占用，注册会失败。" />
+                        </StackPanel>
+                        <ToggleSwitch
+                            Grid.Column="1"
+                            MinWidth="0"
+                            VerticalAlignment="Center"
+                            IsOn="{x:Bind ViewModel.HotkeyEnabled, Mode=TwoWay}"
+                            OffContent="关"
+                            OnContent="开" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!--  存储与关于  -->
+            <Border Padding="16,6" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,10,0,4"
+                        Style="{StaticResource BodyStrongTextBlockStyle}"
+                        Text="存储与关于" />
+
+                    <Grid Padding="0,10" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="配置与数据" />
+                            <TextBlock
+                                IsTextSelectionEnabled="True"
+                                Style="{StaticResource RowHint}"
+                                Text="{x:Bind ViewModel.ConfigPathText, Mode=OneWay}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <Button Command="{x:Bind ViewModel.OpenConfigFolderCommand}" Content="打开数据文件夹" />
+                            <Button Command="{x:Bind ViewModel.OpenLogFolderCommand}" Content="查看日志" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Style="{StaticResource RowDivider}" />
+
+                    <Grid Padding="0,10,0,12" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Style="{StaticResource RowLabel}" Text="版本" />
+                            <TextBlock Style="{StaticResource RowHint}" Text="GO_MIDI! WinUI 版 · 基于 qr-rp/GO_Midi 的功能重写" />
+                        </StackPanel>
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FontFamily="Consolas"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.VersionText}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

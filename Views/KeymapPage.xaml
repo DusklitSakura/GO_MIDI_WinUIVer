@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="GoMidi.Views.KeymapPage"
+    NavigationCacheMode="Required"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:GoMidi.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Padding="24,16,24,24" RowSpacing="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="3">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="键位" />
+            <TextBlock
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="点击琴键，再按下想绑定的按键即可完成映射。右键琴键或按 Delete 清除绑定。" />
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Padding="16,14"
+            Style="{StaticResource Card}">
+            <Grid ColumnSpacing="10" RowSpacing="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Text="键位方案" />
+
+                <ComboBox
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{x:Bind ViewModel.Schemes, Mode=OneWay}"
+                    SelectedIndex="{x:Bind ViewModel.SelectedSchemeIndex, Mode=TwoWay}" />
+
+                <Button
+                    Grid.Column="2"
+                    Command="{x:Bind ViewModel.NewSchemeCommand}"
+                    ToolTipService.ToolTip="把当前键位另存为一个方案">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="14" Glyph="&#xE710;" />
+                        <TextBlock Text="另存为" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="3" Command="{x:Bind ViewModel.RenameSchemeCommand}" Content="重命名" />
+                <Button Grid.Column="4" Command="{x:Bind ViewModel.DeleteSchemeCommand}" Content="删除" />
+                <Button Grid.Column="5" Command="{x:Bind ViewModel.ResetDefaultCommand}" Content="恢复默认" />
+
+                <Grid Grid.Row="1" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="音域" />
+
+                    <NumberBox
+                        Grid.Column="1"
+                        Width="110"
+                        Header="最低音"
+                        Maximum="127"
+                        Minimum="0"
+                        SpinButtonPlacementMode="Compact"
+                        Value="{x:Bind ViewModel.MinPitch, Mode=TwoWay}" />
+
+                    <NumberBox
+                        Grid.Column="2"
+                        Width="110"
+                        Header="最高音"
+                        Maximum="127"
+                        Minimum="0"
+                        SpinButtonPlacementMode="Compact"
+                        Value="{x:Bind ViewModel.MaxPitch, Mode=TwoWay}" />
+
+                    <TextBlock
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        Margin="4,18,0,0"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Text="{x:Bind ViewModel.SchemeHint, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+
+                    <Button
+                        Grid.Column="5"
+                        Margin="0,18,0,0"
+                        Command="{x:Bind ViewModel.LoadYysCommand}"
+                        Content="载入燕云十六声" />
+                    <Button
+                        Grid.Column="6"
+                        Margin="0,18,0,0"
+                        Command="{x:Bind ViewModel.ExportCommand}"
+                        Content="导出键位" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Padding="12"
+            Style="{StaticResource Card}">
+            <StackPanel Spacing="8">
+                <controls:KeymapKeyboard x:Name="Keyboard" />
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="2">
+                        <TextBlock
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Text="{x:Bind ViewModel.SelectedNoteText, Mode=OneWay}" />
+                        <TextBlock
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                            Text="{x:Bind ViewModel.SelectedBindingText, Mode=OneWay}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Command="{x:Bind ViewModel.ImportCommand}"
+                        Content="导入 .txt 键位" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border
+            Grid.Row="3"
+            Padding="16,14"
+            Style="{StaticResource Card}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="10">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="键位文件语法" />
+                    <TextBlock
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="每行一条映射：音符（音名或 MIDI 编号）+ 分隔符 + 按键。分隔符支持 : = - 空格，全角半角都可以；以 # 或 - 开头的行是注释。"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="修饰符写在按键后面：+ 表示 Shift，- 表示 Ctrl，* 表示 Alt，可以叠加。LMB / MMB / RMB 表示鼠标左中右键，作为修饰符跟在按键后面（例如 q*LMB 表示 Alt + 鼠标左键 + Q）。"
+                        TextWrapping="Wrap" />
+                    <Border
+                        Padding="12"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        CornerRadius="6">
+                        <TextBlock
+                            FontFamily="Consolas"
+                            IsTextSelectionEnabled="True"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Text="60: q&#x0a;C4 = q+          （Shift+Q）&#x0a;音符 62 (D4)：q-  （Ctrl+Q）&#x0a;64 q*LMB         （Alt+鼠标左键+Q）"
+                            TextWrapping="Wrap" />
+                    </Border>
+                    <TextBlock
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Text="{x:Bind ViewModel.MappingCountText, Mode=OneWay}" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Page>
